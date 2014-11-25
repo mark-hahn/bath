@@ -7,49 +7,54 @@ do refreshSize = ->
 	bodyWid = $('body').width()
 	large = (bodyWid/ 4) + 'px'
 	medium = (bodyWid/ 6) + 'px'
-	small = (bodyWid/18) + 'px'
+	small = (bodyWid/12) + 'px'
 	
 	for hdrId in ['high']
-		$hdr = $('#' + hdrId).css fontSize: large
+		$('#' + hdrId).css fontSize: large
 	
-	for hdrId in ['rain', 'humidity', 'uv', 'phrase']
-		$hdr = $('#' + hdrId).css fontSize: small
+	for hdrId in ['rain', 'humidity', 'cloudcover', 'phrase']
+		$('#' + hdrId).css fontSize: small
 
 setInterval refreshSize, 1000
 
 refreshFore = ->
 	$.getJSON '/forecast', (data) ->
-		{iconURL, high, phrase, chanceRain, wind, humidity, uv} = data
+		{iconURL, high, phrase, rain, wind, humidity, cloudcover} = data
 		
 		$('#forecast').replaceWith render ->
 			div '#forecast', style:'clear:both; float:left; width:100%; height:45%', ->
 				div '#row1', style:'clear:both; float:left; margin-top:5%;
 									width:100%; height:50%', ->
-					div style:'clear:both; float:left; margin-left:5%; 
-								width:45%; height:100%', ->
+					div style:'clear:both; float:left; margin-left:2%; 
+								position: relative; left: 5%;
+								width:35%; height:100%', ->
 						img style:'width:100%; height:100%', src: iconURL
 					div style:'float:right; text-align:right; color:white;
+								position:relative; top:1%;
 								width:40%; margin-right:10%;', ->
-						div '#high', -> raw high
+						div '#high', -> raw Math.ceil high
 			
-				div '#row2', style:'clear:both; float:left; margin-top:0%;
+				div '#row2', style:'clear:both; float:left; margin-top:3%;
 									color:white; width:100%; height:20%', ->
 					div style:'clear:both; float:left; margin-left:10%; 
 							   width:45%', ->
-						div '#phrase', (if phrase then phrase else '')
+						div '#phrase', ->
+							raw (if phrase then phrase.replace(/\s/g, '&nbsp;') else '')
 					div style:'float:right; margin-right:10%; 
 								width:35%; text-align:right', ->
 						div '#humidity', 
-							(if humidity then 'Hum ' + humidity else '')
+							(if humidity then humidity + '%' else '')
 			
-				div '#row3', style:'clear:both; float:left;  margin-top:3%;
-									color:white; width:100%; height:15%', ->
+				div '#row3', style:'clear:both; float:left;  margin-top:3%; margin-bottom:3%;
+									color:white; width:100%; height:20%', ->
 					div style:'clear:both; float:left; margin-left:10%; 
 							width:48%', ->
-						div '#uv', (if uv then 'UV ' + uv.replace(/[-\s]+/g, ' ') else '')
+						div '#cloudcover', (if cloudcover then 'Clouds ' + cloudcover + '%'  else '')
 					div style:'float:right; margin-right:10%;
 							width:32%; text-align:right', ->
-						div '#rain', (if chanceRain then 'Rain ' + chanceRain else '')
+						div '#rain', (if rain? then 'Rain ' + rain + '"' else '')
+					div style:'clear:both'
+				div style:'height:3%', '&nbsp;'
 				
 flash   = 'no'		
 dateMS  = ''
@@ -62,14 +67,11 @@ refreshCurAndTime = ->
 		avgWind = Math.round rtData[5]
 		gust	= Math.round rtData[40]
 		$('#current').replaceWith render ->
-			div '#current', style:'clear:both; float:left; position:relative; top:-7%;
+			div '#current', style:'clear:both; float:left; position:relative; top:8%;
 				width:100%; height:36%', ->
 				div style:'clear:both; float:left; margin:10% 0 2% 10%; 
-					color:white; font-size:' + medium, ->
+						color:white; font-size:' + medium, ->
 					raw temp + '&deg; &nbsp; ' + hum+'%'
-				div style:'clear:both; float:left; margin:0% 0 0% 12%; 
-					color:white; font-size:' + medium,  ->
-					raw avgWind + '&nbsp;-&nbsp;' + gust + '&nbsp;&nbsp;mph'
 	
 	$.getJSON '/cumulus/flash', (data) -> {flash, dateMS} = data
 	
