@@ -46,17 +46,17 @@ sendWarningEmail = ->
 
 # fs.writeFileSync 'flash', 'yes'
 
-# setInterval ->
-#   if new Date().getHours() is 5
-#     fs.writeFileSync 'flash', 'yes'
-#   try
-#     flash = fs.readFileSync 'flash', 'utf8'
-#   catch e
-#     flash = 'no'
-#   if flash is 'yes' and new Date().getHours() > 10 and
-#       (Date.now() - lastEmail) > 60*60*1000
-#     sendWarningEmail()
-# , 10*60*1000
+setInterval ->
+  if new Date().getHours() is 5
+    fs.writeFileSync 'flash', 'yes'
+  try
+    flash = fs.readFileSync 'flash', 'utf8'
+  catch e
+    flash = 'no'
+  if flash is 'yes' and new Date().getHours() > 10 and
+      (Date.now() - lastEmail) > 60*60*1000
+    sendWarningEmail()
+, 10*60*1000
 
 http.createServer (req, res) ->
   console.log 'req:', req.url
@@ -108,18 +108,16 @@ http.createServer (req, res) ->
       #             day.weather_text
       
       # console.log require('util').inspect fcst, depth:null
-                    
-      matches = /sunny|rain|clear/i.exec day.weather_text
-      # console.log day.weather_text, matches
+      day.weather_text = day.weather_text.replace /\sskies/ig, ''
+      matches = /sunny|rain|clear|cloudy|overcast|drizzle/i.exec day.weather_text
       
-      icon = if not matches
-        console.log 'no sunny|rain|clear match for', day.weather_text
-        'xxx.gif'
-      else
-        switch matches[0].toLowerCase()
+      icon = switch matches?[0]?.toLowerCase()
           when 'sunny', 'clear' then 'clear'
+          when 'cloudy'         then 'clouds'
+          when 'overcast'       then 'many-clouds'
+          when 'drizzle'        then 'showers-scattered'
           when 'rain'           then 'showers'
-          else '???'
+          else 'storm-night'
             # then 'clouds'
             # then 'many-clouds'
             # then 'showers-day'
@@ -131,7 +129,7 @@ http.createServer (req, res) ->
       
       rain = wind = humidity = cloudcover = phrase = high = '???'  #  visibility_km  wind.speed
       
-      rain       = day.precip_mm / 25.4
+      rain       = Math.floor day.precip_mm / 25.4
       wind       = day.wind.speed
       humidity   = day.humidity
       cloudcover = day.cloudcover
