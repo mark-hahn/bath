@@ -17,10 +17,10 @@ do refreshSize = ->
 
 setInterval refreshSize, 1000
 
-dayIdx = null
+dayOfs = 0
 
 refreshFore = ->
-	$.getJSON '/forecast', {dayIdx}, (data) ->
+	$.getJSON '/forecast', {dayOfs}, (data) ->
 		{iconURL, high, phrase, rain, wind, humidity, dayOfWeek} = data
 		
 		$('#forecast').replaceWith render ->
@@ -127,10 +127,8 @@ $ ->
 	
 	$('body').on 'click', '#forecast', -> 
 		
-		dayIdx ?= 0
-		
 		clrDayTimeout = ->
-			dayIdx = null
+			dayOfs = 0
 			refreshFore()
 			if dayTimeout
 				clearTimeout dayTimeout
@@ -139,5 +137,5 @@ $ ->
 		if dayTimeout then clearTimeout dayTimeout
 		dayTimeout = setTimeout clrDayTimeout, 10 * 1000
 		
-		if (dayIdx++ > 2) then clrDayTimeout()
-		else refreshFore()
+		dayOfs++
+		refreshFore()

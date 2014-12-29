@@ -63,7 +63,7 @@ days = null
 forecastURL = 'http://api.wunderground.com/api/0ab64c6b7d983f0e/forecast/q/33.840404,-118.186365.json'
 
 do getForecast = ->
-  if Date.now() > cacheTime + 30 * 60 * 1000
+  if Date.now() > cacheTime + 10 * 60 * 1000
     request forecastURL, (err, resp, data) ->
       data = JSON.parse data
       days = data.forecast.simpleforecast.forecastday
@@ -101,16 +101,18 @@ http.createServer (req, res) ->
     return
   
   if req.url[0..8] is '/forecast'
-    dayIdx = url.parse(req.url, true).query.dayIdx
+    dayOfs = url.parse(req.url, true).query.dayOfs
 
     getForecast()
     
     if days  
       
-      for day in days
+      for day, dayIdx in days
         if Date.now() < (day.date.epoch - 3*60*60)*1000
           break
-      if dayIdx and dayIdx < days.length then day = days[dayIdx]
+      
+      day = days[(dayIdx + dayOfs) % days.length]
+      
       iconURL    = day.icon_url
       high       = day.high.fahrenheit
       phrase     = day.conditions
@@ -129,7 +131,7 @@ http.createServer (req, res) ->
       humidity=50
       dayOfWeek='Please wait...'
   
-    console.log require('util').inspect {iconURL, high, phrase, rain, wind, humidity, dayOfWeek}, depth:null
+    # console.log require('util').inspect {iconURL, high, phrase, rain, wind, humidity, dayOfWeek}, depth:null
     
     res.writeHead 200, "Content-Type": "text/json"
     res.end JSON.stringify {iconURL, high, phrase, rain, wind, humidity, dayOfWeek}
