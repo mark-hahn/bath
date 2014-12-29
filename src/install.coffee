@@ -10,16 +10,10 @@ Service = require("node-windows").Service
 op = process.argv[2] ? 'start'
 if op not in ['start', 'stop'] then console.log 'bad arg:', op; return
 
-if fs.exists '/apps/bath/lib/server-released.js'
-	fs.unlinkSync '/apps/bath/lib/server-released.js'
-
-fs.createReadStream('/apps/bath/lib/server.js').
-	pipe fs.createWriteStream '/apps/bath/lib/server-released.js'
-
 svc = new Service 
 	name: 			"BATH"
 	description: 	"Bathroom Display"
-	script: 		"C:/apps/bath/lib/server-released.js"
+	script: 		"C:/apps/bath/lib/server.js"
 
 svc.on "install", -> 
 	console.log 'BATH Service Installed'

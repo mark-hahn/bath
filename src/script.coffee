@@ -12,14 +12,14 @@ do refreshSize = ->
 	for hdrId in ['high']
 		$('#' + hdrId).css fontSize: large
 	
-	for hdrId in ['rain', 'humidity', 'cloudcover', 'phrase']
+	for hdrId in ['rain', 'humidity', 'dayOfWeek', 'phrase']
 		$('#' + hdrId).css fontSize: small
 
 setInterval refreshSize, 1000
 
 refreshFore = ->
 	$.getJSON '/forecast', (data) ->
-		{iconURL, high, phrase, rain, wind, humidity, cloudcover} = data
+		{iconURL, high, phrase, rain, wind, humidity, dayOfWeek} = data
 		
 		$('#forecast').replaceWith render ->
 			div '#forecast', style:'clear:both; float:left; width:100%; height:45%', ->
@@ -38,8 +38,7 @@ refreshFore = ->
 									color:white; width:100%; height:20%', ->
 					div style:'clear:both; float:left; margin-left:10%; 
 							   width:45%', ->
-						div '#phrase', ->
-							raw (if phrase then phrase.replace(/\s/g, '&nbsp;') else '')
+						div '#dayOfWeek', (if dayOfWeek then dayOfWeek else '')
 					div style:'float:right; margin-right:10%; 
 								width:35%; text-align:right', ->
 						div '#humidity', 
@@ -49,7 +48,8 @@ refreshFore = ->
 									color:white; width:100%; height:20%', ->
 					div style:'clear:both; float:left; margin-left:10%; 
 							width:48%', ->
-						div '#cloudcover', (if cloudcover then 'Clouds ' + cloudcover + '%'  else '')
+						div '#phrase', ->
+							raw (if phrase then phrase.replace(/\s/g, '&nbsp;') else '')
 					div style:'float:right; margin-right:10%;
 							width:32%; text-align:right', ->
 						div '#rain', (if rain? then 'Rain ' + rain + '"' else '')
@@ -105,11 +105,17 @@ setInterval ->
 		if dowColor is 'white' then dowColor = 'blue' else dowColor = 'white'
 	else
 		dowColor = 'white'
-, 750
+, 1000
 
 $ ->
 	$('body').on 'click', '#dow', -> 
 		flash = 'no'
+		dowColor = 'red'
+		$('#dow').css color: dowColor
+		setTimeout ->
+			dowColor = 'white'
+			$('#dow').css color: dowColor
+		, 1000
 		$.get '/cumulus/flash', clear: 1
 	
 	refreshFore()

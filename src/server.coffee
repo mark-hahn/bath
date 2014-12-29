@@ -88,60 +88,29 @@ http.createServer (req, res) ->
           script src: 'lib/script.js'
     return
   
-  forecastURL = 'http://www.myweather2.com/developer/weather.ashx?uac=Sp.zBdhFxh&uref=0900ec9b-28ee-4d21-92d6-e28b2817bac5&output=json'
+  forecastURL = 'http://api.wunderground.com/api/0ab64c6b7d983f0e/forecast/q/33.840404,-118.186365.json'
   
   if req.url is '/forecast'
     request forecastURL, (err, resp, data) ->
       data = JSON.parse data
-      # console.log require('util').inspect data, depth:null
-      
-      for fcst in data.weather.forecast
-        if Date.now() > new Date(fcst.date).getTime()
+      for day in data.forecast.simpleforecast.forecastday
+        if Date.now() < (day.date.epoch - 3*60*60)*1000
           break
-          
-      day = fcst.day[0]
+
+      console.log require('util').inspect day, depth:null
       
-      # console.log fcst.date, 
-      #            (fcst.day_max_temp * 9 / 5 + 32), 
-      #            (day.precip_mm / 25.4),
-      #             day.humidity,
-      #             day.weather_text
-      
-      # console.log require('util').inspect fcst, depth:null
-      day.weather_text = day.weather_text.replace /\sskies/ig, ''
-      matches = /sunny|rain|clear|cloudy|overcast|drizzle/i.exec day.weather_text
-      
-      icon = switch matches?[0]?.toLowerCase()
-          when 'sunny', 'clear' then 'clear'
-          when 'cloudy'         then 'clouds'
-          when 'overcast'       then 'many-clouds'
-          when 'drizzle'        then 'showers-scattered'
-          when 'rain'           then 'showers'
-          else 'storm-night'
-            # then 'clouds'
-            # then 'many-clouds'
-            # then 'showers-day'
-            # then 'showers-scattered-day'
-            # then 'showers-scattered'
-            # then 'storm-night'
-            
-      iconURL = '/lib/icons/Status-weather-' + icon + '-icon.png'
-      
-      rain = wind = humidity = cloudcover = phrase = high = '???'  #  visibility_km  wind.speed
-      
-      rain       = Math.floor day.precip_mm / 25.4
-      wind       = day.wind.speed
-      humidity   = day.humidity
-      cloudcover = day.cloudcover
-      phrase     = day.weather_text
-      high       = fcst.day_max_temp * 9 / 5 + 32
-        
+      iconURL    = day.icon_url
+      high       = day.high.fahrenheit
+      phrase     = day.conditions
+      rain       = day.qpf_allday.in
+      wind       = day.avewind.mph
+      humidity   = day.avehumidity
+      dayOfWeek  = day.date.weekday
+
       res.writeHead 200, "Content-Type": "text/json"
-      res.end JSON.stringify {iconURL, high, phrase, rain, wind, humidity, cloudcover}
+      res.end JSON.stringify {iconURL, high, phrase, rain, wind, humidity, dayOfWeek}
     return
 
-  # http://www.myweather2.com/Images/weather/Rainy.gif
-  
   if req.url[0..13] is '/cumulus/flash'
     if url.parse(req.url, true).query.clear is '1'
       fs.writeFileSync 'flash', 'no'
