@@ -17,8 +17,10 @@ do refreshSize = ->
 
 setInterval refreshSize, 1000
 
+dayIdx = null
+
 refreshFore = ->
-	$.getJSON '/forecast', (data) ->
+	$.getJSON '/forecast', {dayIdx}, (data) ->
 		{iconURL, high, phrase, rain, wind, humidity, dayOfWeek} = data
 		
 		$('#forecast').replaceWith render ->
@@ -52,7 +54,7 @@ refreshFore = ->
 							raw (if phrase then phrase.replace(/\s/g, '&nbsp;') else '')
 					div style:'float:right; margin-right:10%;
 							width:32%; text-align:right', ->
-						div '#rain', (if rain? then 'Rain ' + rain + '"' else '')
+						div '#rain', (if rain? then rain + '"' else '')
 					div style:'clear:both'
 				div style:'height:3%', '&nbsp;'
 				
@@ -118,5 +120,24 @@ $ ->
 		, 1000
 		$.get '/cumulus/flash', clear: 1
 	
-	refreshFore()
+	# refreshFore()
 	refreshCurAndTime()
+	
+	dayTimeout = null
+	
+	$('body').on 'click', '#forecast', -> 
+		
+		dayIdx ?= 0
+		
+		clrDayTimeout = ->
+			dayIdx = null
+			refreshFore()
+			if dayTimeout
+				clearTimeout dayTimeout
+				dayTimeout = null
+
+		if dayTimeout then clearTimeout dayTimeout
+		dayTimeout = setTimeout clrDayTimeout, 10 * 1000
+		
+		if (dayIdx++ > 2) then clrDayTimeout()
+		else refreshFore()
