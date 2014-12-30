@@ -101,7 +101,7 @@ http.createServer (req, res) ->
     return
   
   if req.url[0..8] is '/forecast'
-    dayOfs = url.parse(req.url, true).query.dayOfs
+    dayOfs = +url.parse(req.url, true).query.dayOfs
 
     getForecast()
     
@@ -112,6 +112,8 @@ http.createServer (req, res) ->
           break
       
       day = days[(dayIdx + dayOfs) % days.length]
+      
+      console.log require('util').inspect({dayIdx, dayOfs, days},depth:null), Date.now()
       
       iconURL    = day.icon_url
       high       = day.high.fahrenheit
