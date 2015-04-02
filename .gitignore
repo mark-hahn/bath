@@ -2,3 +2,4 @@ node_modules
 daemon
 lib/**
 *.png
+*.log
