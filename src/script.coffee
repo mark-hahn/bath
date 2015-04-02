@@ -62,20 +62,18 @@ flash   = 'no'
 dateMS  = ''
 
 refreshCurAndTime = -> 
-	$.get '/cumulus/realtime.txt', (data) ->
-		rtData  = data.split ' '
-		temp 	= rtData[2]
-		hum  	= rtData[3]
-		avgWind = Math.round rtData[5]
-		gust	= Math.round rtData[40]
+	$.get '/weewx', (data) ->
+		data = JSON.parse data
+		{outTemp, outHumidity} = data.data
+		console.log data.data, outTemp + '&deg; &nbsp; ' + outHumidity+'%'
 		$('#current').replaceWith render ->
 			div '#current', style:'clear:both; float:left; position:relative; top:8%;
 				width:100%; height:36%', ->
 				div style:'clear:both; float:left; margin:10% 0 2% 10%; 
 						color:white; font-size:' + medium, ->
-					raw temp + '&deg; &nbsp; ' + hum+'%'
+					raw outTemp + '&deg; &nbsp; ' + outHumidity+'%'
 	
-	$.getJSON '/cumulus/flash', (data) -> {flash, dateMS} = data
+	$.getJSON '/flash', (data) -> {flash, dateMS} = data
 	
 	date = new Date() 
 	dow  = date.getDay()
@@ -118,7 +116,7 @@ $ ->
 			dowColor = 'white'
 			$('#dow').css color: dowColor
 		, 1000
-		$.get '/cumulus/flash', clear: 1
+		$.get '/flash', clear: 1
 	
 	# refreshFore()
 	refreshCurAndTime()

@@ -5,20 +5,19 @@
     coffee -cmo lib src/srvr.coffee
 ###
 
-# console.log process.cwd()	# C:\WINDOWS\system32    C:\apps\bath
-# console.log __dirname 		# C:\apps\bath\lib       C:\apps\bath\lib
+console.log process.cwd()
+console.log __dirname 	
 
-process.chdir '/apps/bath'
+# process.chdir '~/apps/bath'
 
-fs			= require 'fs'
-url 		= require 'url'
+fs		   	= require 'fs'
+url 		  = require 'url'
 http    	= require 'http'
 request 	= require 'request'
 cheerio 	= require 'cheerio'
 nodeStatic  = require 'node-static'
 fileServer	= new nodeStatic.Server null, cache: 0
-fileSrvrCum	= new nodeStatic.Server '/',  cache: 0
-#fileSrvrLib	= new nodeStatic.Server '/apps/bath/lib',  cache: 0
+sqlite3     = require("sqlite3").verbose()
 
 nodemailer = require "nodemailer"
 transporter = nodemailer.createTransport
@@ -41,6 +40,19 @@ sendWarningEmail = ->
       console.log error
     else
       console.log "Message sent: " + info.response
+
+getWxData = (cb) ->
+  db = new sqlite3.Database '/var/lib/weewx/weewx.sdb', sqlite3.OPEN_READONLY, (err) ->
+    if err then console.log 'Error opening weewx db', err; cb? err; return
+    db.get 'SELECT outTemp, outHumidity FROM archive ORDER BY  dateTime DESC LIMIT 1', (err, res) ->
+      if err
+        console.log 'Error reading weewx db', err
+        db.close()
+        cb? err
+        return
+      # console.log 'getWxData', res
+      cb? res
+      db.close()
 
 {render, doctype, html, head, title, body, div, img, raw, text, script} = require 'teacup'
 
@@ -113,7 +125,7 @@ http.createServer (req, res) ->
       
       day = days[(dayIdx + dayOfs) % days.length]
       
-      console.log require('util').inspect({dayIdx, dayOfs, days},depth:null), Date.now()
+      # console.log require('util').inspect({dayIdx, dayOfs, days},depth:null), Date.now()
       
       iconURL    = day.icon_url
       high       = day.high.fahrenheit
@@ -139,7 +151,7 @@ http.createServer (req, res) ->
     res.end JSON.stringify {iconURL, high, phrase, rain, wind, humidity, dayOfWeek}
     return
 
-  if req.url[0..13] is '/cumulus/flash'
+  if req.url[0..5] is '/flash'
     if url.parse(req.url, true).query.clear is '1'
       fs.writeFileSync 'flash', 'no'
     try
@@ -149,11 +161,8 @@ http.createServer (req, res) ->
     res.end JSON.stringify {flash, dateMS}
     return
 
-  if req.url[0...9] is '/cumulus/'
-    req.addListener('end', ->
-      fileSrvrCum.serve req, res, (err) ->
-        if err then console.log 'cumulus file server error\n', req.url, err
-    ).resume()
+  if req.url[0...9] is '/weewx'
+    getWxData (data) -> res.end JSON.stringify {data}
     return
 
   if req.url in ['/teacup.js', '/script.js']
