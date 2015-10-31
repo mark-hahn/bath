@@ -16,30 +16,30 @@ http    	= require 'http'
 request 	= require 'request'
 cheerio 	= require 'cheerio'
 nodeStatic  = require 'node-static'
-fileServer	= new nodeStatic.Server null, cache: 0
+fileServer	= new nodeStatic.Server null #, cache: 0
 sqlite3     = require("sqlite3").verbose()
 
-nodemailer = require "nodemailer"
-transporter = nodemailer.createTransport
-  service: "Gmail"
-  auth:
-    user: "mark@hahnca.com"
-    pass: "GHJlkjert987"
-mailOptions =
-  from: "mark@hahnca.com"
-  to: "mark@hahnca.com"
-  subject: "Pill warning"
-  text: "Pill warning"
-  html: "Pill warning"
-
-lastEmail = 0 #Date.now()
-sendWarningEmail = ->
-  lastEmail = Date.now()
-  transporter.sendMail mailOptions, (error, info) ->
-    if error
-      console.log error
-    else
-      console.log "Message sent: " + info.response
+# nodemailer = require "nodemailer"
+# transporter = nodemailer.createTransport
+#   service: "Gmail"
+#   auth:
+#     user: "mark@hahnca.com"
+#     pass: "GHJlkjert987"
+# mailOptions =
+#   from: "mark@hahnca.com"
+#   to: "mark@hahnca.com"
+#   subject: "Pill warning"
+#   text: "Pill warning"
+#   html: "Pill warning"
+# 
+# lastEmail = 0 #Date.now()
+# sendWarningEmail = ->
+#   lastEmail = Date.now()
+#   transporter.sendMail mailOptions, (error, info) ->
+#     if error
+#       console.log error
+#     else
+#       console.log "Message sent: " + info.response
 
 getWxData = (cb) ->
   db = new sqlite3.Database '/var/lib/weewx/weewx.sdb', sqlite3.OPEN_READONLY, (err) ->
@@ -58,17 +58,17 @@ getWxData = (cb) ->
 
 # fs.writeFileSync 'flash', 'yes'
 
-setInterval ->
-  if new Date().getHours() is 5
-    fs.writeFileSync 'flash', 'yes'
-  try
-    flash = fs.readFileSync 'flash', 'utf8'
-  catch e
-    flash = 'no'
-  if flash is 'yes' and new Date().getHours() > 10 and
-      (Date.now() - lastEmail) > 60*60*1000
-    sendWarningEmail()
-, 10*60*1000
+# setInterval ->
+#   if new Date().getHours() is 5
+#     fs.writeFileSync 'flash', 'yes'
+#   try
+#     flash = fs.readFileSync 'flash', 'utf8'
+#   catch e
+#     flash = 'no'
+#   if flash is 'yes' and new Date().getHours() > 10 and
+#       (Date.now() - lastEmail) > 60*60*1000
+#     sendWarningEmail()
+# , 10*60*1000
 
 cacheTime = 0
 days = null
@@ -151,16 +151,16 @@ http.createServer (req, res) ->
     res.end JSON.stringify {iconURL, high, phrase, rain, wind, humidity, dayOfWeek}
     return
 
-  if req.url[0..5] is '/flash'
-    if url.parse(req.url, true).query.clear is '1'
-      fs.writeFileSync 'flash', 'no'
-    try
-      flash = fs.readFileSync 'flash', 'utf8'
-    catch e
-    dateMS = Date.now()
-    res.end JSON.stringify {flash, dateMS}
-    return
-
+  # if req.url[0..5] is '/flash'
+  #   if url.parse(req.url, true).query.clear is '1'
+  #     fs.writeFileSync 'flash', 'no'
+  #   try
+  #     flash = fs.readFileSync 'flash', 'utf8'
+  #   catch e
+  #   dateMS = Date.now()
+  #   res.end JSON.stringify {flash, dateMS}
+  #   return
+  
   if req.url[0...9] is '/weewx'
     getWxData (data) -> res.end JSON.stringify {data}
     return

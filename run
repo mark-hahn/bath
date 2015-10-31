@@ -1,6 +1,6 @@
 kill $(pgrep -f /root/apps/bath/lib/server)
 set -e
 cd /root/apps/bath
-rsync -a /root/Dropbox/apps/bath ~/apps
+rsync -av /root/dev/apps/bath ~/apps
 coffee -co lib src/*.coffee
-node /root/apps/bath/lib/server
+nohup node /root/apps/bath/lib/server &
