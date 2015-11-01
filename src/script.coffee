@@ -58,8 +58,8 @@ refreshFore = ->
 					div style:'clear:both'
 				div style:'height:3%', '&nbsp;'
 				
-flash   = 'no'		
-dateMS  = ''
+# flash   = 'no'		
+# dateMS  = ''
 
 refreshCurAndTime = -> 
 	$.get '/weewx', (data) ->
@@ -73,14 +73,14 @@ refreshCurAndTime = ->
 						color:white; font-size:' + medium, ->
 					raw outTemp + '&deg; &nbsp; ' + outHumidity+'%'
 	
-	$.getJSON '/flash', (data) -> {flash, dateMS} = data
+	# $.getJSON '/flash', (data) -> {flash, dateMS} = data
 	
-	date = new Date() 
+	dateMS = date = new Date() 
 	dow  = date.getDay()
 	dowStr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dow]
 	$('#dow').css(fontSize: medium).text dowStr
 	
-	date = new Date +dateMS
+	# date = new Date +dateMS
 	hour = ['12', ' 1', ' 2', ' 3', ' 4', ' 5', 
 			' 6', ' 7', ' 8', ' 9', '10', '11'][date.getHours() % 12]
 	mins = '' + date.getMinutes()
@@ -98,25 +98,26 @@ setInterval ->
 , 5000
 
 dowColor = 'white'
+$('#dow').css color: dowColor
 
-setInterval ->
-	$('#dow').css color: dowColor
-	if flash is 'yes'
-		if dowColor is 'white' then dowColor = 'blue' else dowColor = 'white'
-	else
-		dowColor = 'white'
-, 1000
+# setInterval ->
+# 	$('#dow').css color: dowColor
+# 	if flash is 'yes'
+# 		if dowColor is 'white' then dowColor = 'blue' else dowColor = 'white'
+# 	else
+# 		dowColor = 'white'
+# , 1000
 
 $ ->
-	$('body').on 'click', '#dow', -> 
-		flash = 'no'
-		dowColor = 'red'
-		$('#dow').css color: dowColor
-		setTimeout ->
-			dowColor = 'white'
-			$('#dow').css color: dowColor
-		, 1000
-		$.get '/flash', clear: 1
+	# $('body').on 'click', '#dow', -> 
+		# flash = 'no'
+		# dowColor = 'red'
+		# $('#dow').css color: dowColor
+		# setTimeout ->
+		# 	dowColor = 'white'
+		# 	$('#dow').css color: dowColor
+		# , 1000
+		# $.get '/flash', clear: 1
 	
 	# refreshFore()
 	refreshCurAndTime()
