@@ -3,12 +3,11 @@
 
     cd /bath
     coffee -cmo lib src/srvr.coffee
+
+api doc ...
+    https://docs.google.com/document/d/1_Zte7-SdOjnzBttb1-Y9e0Wgl0_3tah9dSwXUyEA3-c/edit
+    
 ###
-
-console.log process.cwd()
-console.log __dirname 	
-
-# process.chdir '~/apps/bath'
 
 fs		   	= require 'fs'
 url 		  = require 'url'
@@ -31,7 +30,7 @@ sqlite3     = require("sqlite3").verbose()
 #   subject: "Pill warning"
 #   text: "Pill warning"
 #   html: "Pill warning"
-# 
+#
 # lastEmail = 0 #Date.now()
 # sendWarningEmail = ->
 #   lastEmail = Date.now()
@@ -70,20 +69,84 @@ getWxData = (cb) ->
 #     sendWarningEmail()
 # , 10*60*1000
 
+###
+{ dayOfWeek:
+   [ 'Friday', 'Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday' ],
+  expirationTimeUtc:
+   [ 1567217117,
+     1567217117,
+     1567217117,
+     1567217117,
+     1567217117,
+     1567217117 ],
+  narrative:
+   [ 'Clear. Lows overnight in the upper 60s.',
+     'Sunny. Highs in the upper 80s and lows in the upper 60s.',
+     'Abundant sunshine. Highs in the low 90s and lows in the low 70s.',
+     'Sunshine. Highs in the upper 80s and lows in the low 70s.',
+     'Abundant sunshine. Highs in the upper 80s and lows in the low 70s.',
+     'Abundant sunshine. Highs in the low 90s and lows in the low 70s.' ],
+  temperatureMax: [ null, 89, 92, 89, 89, 90 ],
+  temperatureMin: [ 69, 69, 70, 71, 71, 71 ],
+  validTimeUtc:
+   [ 1567173600,
+     1567260000,
+     1567346400,
+     1567432800,
+     1567519200,
+     1567605600 ],
+  daypart:
+   [ { cloudCover: [Array],
+       dayOrNight: [Array],
+       daypartName: [Array],
+       iconCode: [Array],
+       iconCodeExtend: [Array],
+       narrative: [Array],
+       precipChance: [Array],
+       precipType: [Array],
+       qpf: [Array],
+       qpfSnow: [Array],
+       qualifierCode: [Array],
+       qualifierPhrase: [Array],
+       relativeHumidity: [Array],
+       snowRange: [Array],
+       temperature: [Array],
+       temperatureHeatIndex: [Array],
+       temperatureWindChill: [Array],
+       thunderCategory: [Array],
+       thunderIndex: [Array],
+       uvDescription: [Array],
+       uvIndex: [Array],
+       windDirection: [Array],
+       windDirectionCardinal: [Array],
+       windPhrase: [Array],
+       windSpeed: [Array],
+       wxPhraseLong: [Array],
+       wxPhraseShort: [Array] 
+
+###
 cacheTime = 0
 days = null
-forecastURL = 'http://api.wunderground.com/api/0ab64c6b7d983f0e/forecast/q/33.840404,-118.186365.json'
+daypart = null
+data = {}
+forecastURL = 'https://api.weather.com/v3/wx/forecast/daily/5day?geocode=33.840404,-118.186365&format=json' +
+              '&units=e&language=en-US&apiKey=e727e7d0cd694a5da7e7d0cd69fa5dec'
 
 do getForecast = ->
   if Date.now() > cacheTime + 10 * 60 * 1000
-    request forecastURL, (err, resp, data) ->
-      data = JSON.parse data
-      days = data.forecast.simpleforecast.forecastday
-      cacheTime = Date.now()
-      console.log 'Accessed weather underground and got ' + days.length + ' days.'
+    request forecastURL, (err, resp, datain) ->
+      try
+        data = JSON.parse datain  
+        days = data.dayOfWeek
+        console.log 'Accessed api.weather.com and got ' + days.length + ' days.'
+        cacheTime = Date.now()
+        daypart = data.daypart[0]
+      catch errCaught 
+        console.log 'error accessing api.weather.com\n', {errCaught, forecastURL, err, resp, data}
 
 http.createServer (req, res) ->
-  console.log 'req:', req.url
+  if(req.url != '/weewx')
+    console.log 'req:', req.url
   if req.url is '/'
     res.writeHead 200, "Content-Type": "text/html"
     res.end render ->
@@ -111,42 +174,55 @@ http.createServer (req, res) ->
           script src: 'lib/teacup.js'
           script src: 'lib/script.js'
     return
-  
+
   if req.url[0..8] is '/forecast'
     dayOfs = +url.parse(req.url, true).query.dayOfs
 
     getForecast()
-    
-    if days  
-      
+
+    if days
       for day, dayIdx in days
-        if Date.now() < (day.date.epoch - 3*60*60)*1000
+        if Date.now() < data.validTimeUtc[dayIdx]*1000 + 10*60*60*1000
           break
-      
-      day = days[(dayIdx + dayOfs) % days.length]
-      
+
+      day1 = dayIdx;
+      dayIdx    = (day1 + dayOfs) % days.length
+      daypIdx   = dayIdx * 2
+      if not daypart.iconCode[daypIdx]
+        dayIdx = day1
+        daypIdx   = dayIdx * 2
+      daypName  = daypart.daypartName[daypIdx]
+
+      console.log {dayIdx,daypIdx,daypName}
+
+      # phrase = daypart[0].daypartName
+      # wxPhraseLong[dayIdx]
+      # console.log {phrase}
+
       # console.log require('util').inspect({dayIdx, dayOfs, days},depth:null), Date.now()
-      
-      iconURL    = day.icon_url
-      high       = day.high.fahrenheit
-      phrase     = day.conditions
-      rain       = day.qpf_allday.in
-      wind       = day.avewind.mph
-      humidity   = day.avehumidity
-      dayOfWeek  = day.date.weekday
-      
+      if day
+        iconCode   = daypart.iconCode[daypIdx]
+        # if iconCode.length < 2
+        #   iconCode = '0' + iconCode
+        iconURL = 'icons/' + iconCode + '.png'
+        high       = daypart.temperature[daypIdx]
+        phrase     = daypart.wxPhraseLong[daypIdx]
+        rain       = daypart.precipChance[daypIdx]
+        wind       = daypart.windSpeed[daypIdx]
+        humidity   = daypart.relativeHumidity[daypIdx]
+        dayOfWeek  = daypName
+
     else
-      
-      iconURL = 'http://icons.wxug.com/i/c/k/clear.gif'
+      iconURL = 'icons/00.png'
       high = 0
       phrase=''
       rain = 0
       wind = 0
       humidity=50
       dayOfWeek='Please wait...'
-  
+
     # console.log require('util').inspect {iconURL, high, phrase, rain, wind, humidity, dayOfWeek}, depth:null
-    
+
     res.writeHead 200, "Content-Type": "text/json"
     res.end JSON.stringify {iconURL, high, phrase, rain, wind, humidity, dayOfWeek}
     return
@@ -160,7 +236,7 @@ http.createServer (req, res) ->
   #   dateMS = Date.now()
   #   res.end JSON.stringify {flash, dateMS}
   #   return
-  
+
   if req.url[0...9] is '/weewx'
     getWxData (data) -> res.end JSON.stringify {data}
     return
@@ -189,20 +265,3 @@ http.createServer (req, res) ->
 
 
 console.log 'listening on port 1337'
-
-
-###
-          tu  we  th
-wund web  85  87  83
-accuwthr  85  85  83
-mywthr2   84  88  84
-google    84  86  86
-weather2  82  89  84
-wthrchan  80  84  82
-wund api  80  83  82
-willywthr 80  82  79
-intlicast 79  85  82
-frcst.io  75  78  79
-wthrbug   75  75  75
-openwthr  70  70  70  
-###

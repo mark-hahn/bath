@@ -1,5 +1,8 @@
 
-{render, div, raw, img} = teacup
+render = teacup.render
+div = teacup.div
+raw = teacup.raw
+img = teacup.img
 
 large = medium = small = null
 
@@ -8,10 +11,10 @@ do refreshSize = ->
 	large = (bodyWid/ 4) + 'px'
 	medium = (bodyWid/ 6) + 'px'
 	small = (bodyWid/12) + 'px'
-	
+
 	for hdrId in ['high']
 		$('#' + hdrId).css fontSize: large
-	
+
 	for hdrId in ['rain', 'humidity', 'dayOfWeek', 'phrase']
 		$('#' + hdrId).css fontSize: small
 
@@ -20,14 +23,19 @@ setInterval refreshSize, 1000
 dayOfs = 0
 
 refreshFore = ->
-	$.getJSON '/forecast', {dayOfs}, (data) ->
-		{iconURL, high, phrase, rain, wind, humidity, dayOfWeek} = data
-		
+	$.getJSON 'forecast', {dayOfs}, (data) ->
+		iconURL = data.iconURL
+		high = data.high
+		phrase = data.phrase
+		rain = data.rain
+		wind = data.wind
+		humidity = data.humidity
+		dayOfWeek = data.dayOfWeek
 		$('#forecast').replaceWith render ->
 			div '#forecast', style:'clear:both; float:left; width:100%; height:45%', ->
 				div '#row1', style:'clear:both; float:left; margin-top:5%;
 									width:100%; height:50%', ->
-					div style:'clear:both; float:left; margin-left:2%; 
+					div style:'clear:both; float:left; margin-left:2%;
 								position: relative; left: 5%;
 								width:35%; height:100%', ->
 						img style:'width:100%; height:100%', src: iconURL
@@ -35,58 +43,59 @@ refreshFore = ->
 								position:relative; top:1%;
 								width:40%; margin-right:10%;', ->
 						div '#high', -> raw Math.ceil high
-			
+
 				div '#row2', style:'clear:both; float:left; margin-top:3%;
 									color:white; width:100%; height:20%', ->
-					div style:'clear:both; float:left; margin-left:10%; 
+					div style:'clear:both; float:left; margin-left:10%;
 							   width:45%', ->
 						div '#dayOfWeek', (if dayOfWeek then dayOfWeek else '')
-					div style:'float:right; margin-right:10%; 
+					div style:'float:right; margin-right:10%;
 								width:35%; text-align:right', ->
-						div '#humidity', 
+						div '#humidity',
 							(if humidity then humidity + '%' else '')
-			
+
 				div '#row3', style:'clear:both; float:left;  margin-top:3%; margin-bottom:3%;
 									color:white; width:100%; height:20%', ->
-					div style:'clear:both; float:left; margin-left:10%; 
+					div style:'clear:both; float:left; margin-left:10%;
 							width:48%', ->
 						div '#phrase', ->
 							raw (if phrase then phrase.replace(/\s/g, '&nbsp;') else '')
 					div style:'float:right; margin-right:10%;
 							width:32%; text-align:right', ->
-						div '#rain', (if rain? then rain + '"' else '')
+						div '#rain', (if rain? then rain + '%' else '')
 					div style:'clear:both'
 				div style:'height:3%', '&nbsp;'
-				
-# flash   = 'no'		
+
+# flash   = 'no'
 # dateMS  = ''
 
-refreshCurAndTime = -> 
-	$.get '/weewx', (data) ->
+refreshCurAndTime = ->
+	$.get 'weewx', (data) ->
 		data = JSON.parse data
-		{outTemp, outHumidity} = data.data
+		outTemp = data.data.outTemp
+		outHumidity = data.data.outHumidity
 		console.log data.data, outTemp + '&deg; &nbsp; ' + outHumidity+'%'
 		$('#current').replaceWith render ->
 			div '#current', style:'clear:both; float:left; position:relative; top:8%;
 				width:100%; height:36%', ->
-				div style:'clear:both; float:left; margin:10% 0 2% 10%; 
+				div style:'clear:both; float:left; margin:10% 0 2% 10%;
 						color:white; font-size:' + medium, ->
 					raw outTemp + '&deg; &nbsp; ' + outHumidity+'%'
-	
+
 	# $.getJSON '/flash', (data) -> {flash, dateMS} = data
-	
-	dateMS = date = new Date() 
+
+	dateMS = date = new Date()
 	dow  = date.getDay()
 	dowStr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dow]
 	$('#dow').css(fontSize: medium).text dowStr
-	
+
 	# date = new Date +dateMS
-	hour = ['12', ' 1', ' 2', ' 3', ' 4', ' 5', 
+	hour = ['12', ' 1', ' 2', ' 3', ' 4', ' 5',
 			' 6', ' 7', ' 8', ' 9', '10', '11'][date.getHours() % 12]
 	mins = '' + date.getMinutes()
 	if mins.length < 2 then mins = '0' + mins
 	$('#time').css(fontSize: medium).html hour + ':' + mins + '<br>&nbsp;<br>&nbsp;'
- 
+
 lastHour = null
 setInterval ->
 	date = new Date()
@@ -109,7 +118,7 @@ $('#dow').css color: dowColor
 # , 1000
 
 $ ->
-	# $('body').on 'click', '#dow', -> 
+	# $('body').on 'click', '#dow', ->
 		# flash = 'no'
 		# dowColor = 'red'
 		# $('#dow').css color: dowColor
@@ -118,14 +127,14 @@ $ ->
 		# 	$('#dow').css color: dowColor
 		# , 1000
 		# $.get '/flash', clear: 1
-	
+
 	# refreshFore()
 	refreshCurAndTime()
-	
+
 	dayTimeout = null
-	
-	$('body').on 'click', '#forecast', -> 
-		
+
+	$('body').on 'click', '#forecast', ->
+
 		clrDayTimeout = ->
 			dayOfs = 0
 			refreshFore()
@@ -135,6 +144,6 @@ $ ->
 
 		if dayTimeout then clearTimeout dayTimeout
 		dayTimeout = setTimeout clrDayTimeout, 10 * 1000
-		
+
 		dayOfs++
 		refreshFore()

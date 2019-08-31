@@ -3,3 +3,4 @@ daemon
 lib/**
 *.png
 *.log
+nohup.out
