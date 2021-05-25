@@ -36,20 +36,24 @@ sqlite3     = require("sqlite3").verbose()
 #   lastEmail = Date.now()
 #   transporter.sendMail mailOptions, (error, info) ->
 #     if error
-#       console.log error
+#       logd error
 #     else
-#       console.log "Message sent: " + info.response
+#       logd "Message sent: " + info.response
+
+logd = (args...) -> 
+  # console.log((new Date()).toLocaleString()
+  console.log('srvr:', (new Date()).toLocaleString(), args...)
 
 getWxData = (cb) ->
   db = new sqlite3.Database '/var/lib/weewx/weewx.sdb', sqlite3.OPEN_READONLY, (err) ->
-    if err then console.log 'Error opening weewx db', err; cb? err; return
+    if err then logd 'Error opening weewx db', err; cb? err; return
     db.get 'SELECT outTemp, outHumidity FROM archive ORDER BY  dateTime DESC LIMIT 1', (err, res) ->
       if err
-        console.log 'Error reading weewx db', err
+        logd 'Error reading weewx db', err
         db.close()
         cb? err
         return
-      # console.log 'getWxData', res
+      # logd 'getWxData', res
       cb? res
       db.close()
 
@@ -138,15 +142,15 @@ do getForecast = ->
       try
         data = JSON.parse datain  
         days = data.dayOfWeek
-        console.log 'Accessed api.weather.com and got ' + days.length + ' days.'
+        logd 'Accessed api.weather.com and got ' + days.length + ' days.'
         cacheTime = Date.now()
         daypart = data.daypart[0]
       catch errCaught 
-        console.log 'error accessing api.weather.com\n', {errCaught, forecastURL, err, resp, data}
+        logd 'error accessing api.weather.com\n', {errCaught, forecastURL, err, resp, data}
 
 http.createServer (req, res) ->
-  if(req.url != '/weewx')
-    console.log 'req:', req.url
+  if not req.url.startsWith '/weewx'
+    logd 'req:', req.url
   if req.url is '/'
     res.writeHead 200, "Content-Type": "text/html"
     res.end render ->
@@ -189,17 +193,17 @@ http.createServer (req, res) ->
       dayIdx    = (day1 + dayOfs) % days.length
       daypIdx   = dayIdx * 2
       if not daypart.iconCode[daypIdx]
-        dayIdx = day1
+        dayIdx = (dayIdx+1) % days.length
         daypIdx   = dayIdx * 2
       daypName  = daypart.daypartName[daypIdx]
 
-      console.log {dayIdx,daypIdx,daypName}
+      logd {dayIdx,daypIdx,daypName}
 
       # phrase = daypart[0].daypartName
       # wxPhraseLong[dayIdx]
-      # console.log {phrase}
+      # logd {phrase}
 
-      # console.log require('util').inspect({dayIdx, dayOfs, days},depth:null), Date.now()
+      # logd require('util').inspect({dayIdx, dayOfs, days},depth:null), Date.now()
       if day
         iconCode   = daypart.iconCode[daypIdx]
         # if iconCode.length < 2
@@ -221,7 +225,7 @@ http.createServer (req, res) ->
       humidity=50
       dayOfWeek='Please wait...'
 
-    # console.log require('util').inspect {iconURL, high, phrase, rain, wind, humidity, dayOfWeek}, depth:null
+    # logd require('util').inspect {iconURL, high, phrase, rain, wind, humidity, dayOfWeek}, depth:null
 
     res.writeHead 200, "Content-Type": "text/json"
     res.end JSON.stringify {iconURL, high, phrase, rain, wind, humidity, dayOfWeek}
@@ -244,24 +248,24 @@ http.createServer (req, res) ->
   if req.url in ['/teacup.js', '/script.js']
     req.addListener('end', ->
       fileServer.serve req, res, (err) ->
-        if err then console.log 'file server lib error\n', req.url, err
+        if err then logd 'file server lib error\n', req.url, err
     ).resume()
     return
 
   if req.url[0...7] is '/icons/'
     req.addListener('end', ->
       fileServer.serve req, res, (err) ->
-        if err then console.log 'file server lib error\n', req.url, err
+        if err then logd 'file server lib error\n', req.url, err
     ).resume()
     return
 
   req.addListener('end', ->
     fileServer.serve req, res, (err) ->
       if err and req.url[-4..-1] not in ['.ico', '.map']
-        console.log 'file server error\n', req.url, err
+        logd 'file server error\n', req.url, err
   ).resume()
 
 .listen 1337
 
 
-console.log 'listening on port 1337'
+logd 'listening on port 1337'
