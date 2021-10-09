@@ -109,24 +109,24 @@ setInterval ->
 dowColor = 'white'
 $('#dow').css color: dowColor
 
-# setInterval ->
-# 	$('#dow').css color: dowColor
-# 	if flash is 'yes'
-# 		if dowColor is 'white' then dowColor = 'blue' else dowColor = 'white'
-# 	else
-# 		dowColor = 'white'
-# , 1000
+setInterval ->
+	$('#dow').css color: dowColor
+	if flash is 'yes'
+		if dowColor is 'white' then dowColor = 'blue' else dowColor = 'white'
+	else
+		dowColor = 'white'
+, 1000
 
 $ ->
-	# $('body').on 'click', '#dow', ->
-		# flash = 'no'
-		# dowColor = 'red'
-		# $('#dow').css color: dowColor
-		# setTimeout ->
-		# 	dowColor = 'white'
-		# 	$('#dow').css color: dowColor
-		# , 1000
-		# $.get '/flash', clear: 1
+	$('body').on 'click', '#dow', ->
+		flash = 'no'
+		dowColor = 'red'
+		$('#dow').css color: dowColor
+		setTimeout ->
+			dowColor = 'white'
+			$('#dow').css color: dowColor
+		, 1000
+		$.get '/flash', clear: 1
 
 	# refreshFore()
 	refreshCurAndTime()

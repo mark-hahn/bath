@@ -18,27 +18,27 @@ nodeStatic  = require 'node-static'
 fileServer	= new nodeStatic.Server null #, cache: 0
 sqlite3     = require("sqlite3").verbose()
 
-# nodemailer = require "nodemailer"
-# transporter = nodemailer.createTransport
-#   service: "Gmail"
-#   auth:
-#     user: "mark@hahnca.com"
-#     pass: "GHJlkjert987"
-# mailOptions =
-#   from: "mark@hahnca.com"
-#   to: "mark@hahnca.com"
-#   subject: "Pill warning"
-#   text: "Pill warning"
-#   html: "Pill warning"
-#
-# lastEmail = 0 #Date.now()
-# sendWarningEmail = ->
-#   lastEmail = Date.now()
-#   transporter.sendMail mailOptions, (error, info) ->
-#     if error
-#       logd error
-#     else
-#       logd "Message sent: " + info.response
+nodemailer = require "nodemailer"
+transporter = nodemailer.createTransport
+  service: "Gmail"
+  auth:
+    user: "mark@hahnca.com"
+    pass: "GHJlkjert987"
+mailOptions =
+  from: "mark@hahnca.com"
+  to: "mark@hahnca.com"
+  subject: "Pill warning"
+  text: "Pill warning"
+  html: "Pill warning"
+
+lastEmail = 0 #Date.now()
+sendWarningEmail = ->
+  lastEmail = Date.now()
+  transporter.sendMail mailOptions, (error, info) ->
+    if error
+      logd error
+    else
+      logd "Message sent: " + info.response
 
 logd = (args...) -> 
   # console.log((new Date()).toLocaleString()
@@ -59,19 +59,19 @@ getWxData = (cb) ->
 
 {render, doctype, html, head, title, body, div, img, raw, text, script} = require 'teacup'
 
-# fs.writeFileSync 'flash', 'yes'
+fs.writeFileSync 'flash', 'yes'
 
-# setInterval ->
-#   if new Date().getHours() is 5
-#     fs.writeFileSync 'flash', 'yes'
-#   try
-#     flash = fs.readFileSync 'flash', 'utf8'
-#   catch e
-#     flash = 'no'
-#   if flash is 'yes' and new Date().getHours() > 10 and
-#       (Date.now() - lastEmail) > 60*60*1000
-#     sendWarningEmail()
-# , 10*60*1000
+setInterval ->
+  if new Date().getHours() is 5
+    fs.writeFileSync 'flash', 'yes'
+  try
+    flash = fs.readFileSync 'flash', 'utf8'
+  catch e
+    flash = 'no'
+  if flash is 'yes' and new Date().getHours() > 10 and
+      (Date.now() - lastEmail) > 60*60*1000
+    sendWarningEmail()
+, 10*60*1000
 
 ###
 { dayOfWeek:
