@@ -1,9 +1,10 @@
 {
   "dependencies": {
     "cheerio": "*",
-    "node-static": "*",
+    "node-static": "^0.7.11",
+    "nodemailer": "^6.6.5",
     "request": "^2.88.2",
-    "sqlite3": "^3.1.13",
+    "sqlite3": "^5.0.2",
     "teacup": "*"
   }
 }

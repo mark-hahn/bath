@@ -1,6 +1,8 @@
-kill $(pgrep -f /root/apps/bath/lib/server)
+kill $(pgrep -f /root/dev/apps/bath/lib/server)
 set -e
-cd /root/apps/bath
-rsync -av /root/dev/apps/bath/ ~/apps/bath
+cd /root/dev/apps/bath
 coffee -co lib src/*.coffee
-nohup node /root/apps/bath/lib/server &
+nohup node /root/dev/apps/bath/lib/server &
+sleep 1
+tail -n 100 nohup.out
+echo

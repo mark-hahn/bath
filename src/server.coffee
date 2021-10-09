@@ -23,7 +23,8 @@ transporter = nodemailer.createTransport
   service: "Gmail"
   auth:
     user: "mark@hahnca.com"
-    pass: "GHJlkjert987"
+    pass: "90GHJlkjert"
+
 mailOptions =
   from: "mark@hahnca.com"
   to: "mark@hahnca.com"
@@ -59,7 +60,7 @@ getWxData = (cb) ->
 
 {render, doctype, html, head, title, body, div, img, raw, text, script} = require 'teacup'
 
-fs.writeFileSync 'flash', 'yes'
+fs.writeFileSync 'flash', 'no'
 
 setInterval ->
   if new Date().getHours() is 5
@@ -231,15 +232,16 @@ http.createServer (req, res) ->
     res.end JSON.stringify {iconURL, high, phrase, rain, wind, humidity, dayOfWeek}
     return
 
-  # if req.url[0..5] is '/flash'
-  #   if url.parse(req.url, true).query.clear is '1'
-  #     fs.writeFileSync 'flash', 'no'
-  #   try
-  #     flash = fs.readFileSync 'flash', 'utf8'
-  #   catch e
-  #   dateMS = Date.now()
-  #   res.end JSON.stringify {flash, dateMS}
-  #   return
+  if req.url[0..5] is '/flash'
+    if url.parse(req.url, true).query.clear is '1'
+      fs.writeFileSync 'flash', 'no'
+    try
+      flash = fs.readFileSync 'flash', 'utf8'
+    catch e
+    dateMS = Date.now()
+    res.end JSON.stringify {flash, dateMS}
+    # sendWarningEmail()  # test email on day click
+    return
 
   if req.url[0...9] is '/weewx'
     getWxData (data) -> res.end JSON.stringify {data}

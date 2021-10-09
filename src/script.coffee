@@ -66,9 +66,11 @@ refreshFore = ->
 					div style:'clear:both'
 				div style:'height:3%', '&nbsp;'
 
-# flash   = 'no'
-# dateMS  = ''
+flash   = 'no'
+dateMS  = ''
 
+# get roof weather, update time, and check pill reminder
+# called every five secs
 refreshCurAndTime = ->
 	$.get 'weewx', (data) ->
 		data = JSON.parse data
@@ -82,14 +84,16 @@ refreshCurAndTime = ->
 						color:white; font-size:' + medium, ->
 					raw outTemp + '&deg; &nbsp; ' + outHumidity+'%'
 
-	# $.getJSON '/flash', (data) -> {flash, dateMS} = data
+	$.getJSON '/flash', (data) -> {flash, dateMS} = data
 
-	dateMS = date = new Date()
+  # date = new Date()
+  # date is based on server time when pill reminder enabled
+	date = new Date +dateMS 
+
 	dow  = date.getDay()
 	dowStr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dow]
 	$('#dow').css(fontSize: medium).text dowStr
 
-	# date = new Date +dateMS
 	hour = ['12', ' 1', ' 2', ' 3', ' 4', ' 5',
 			' 6', ' 7', ' 8', ' 9', '10', '11'][date.getHours() % 12]
 	mins = '' + date.getMinutes()
@@ -119,7 +123,7 @@ setInterval ->
 
 $ ->
 	$('body').on 'click', '#dow', ->
-		flash = 'no'
+		flash = 'yes'
 		dowColor = 'red'
 		$('#dow').css color: dowColor
 		setTimeout ->
