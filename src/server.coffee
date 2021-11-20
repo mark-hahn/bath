@@ -146,7 +146,6 @@ do getForecast = ->
         logd 'Accessed api.weather.com and got ' + days.length + ' days.'
         cacheTime = Date.now()
         daypart = data.daypart[0]
-        fs.writeFileSync "high.txt", daypart.temperature[0].toString()
       catch errCaught 
         logd 'error accessing api.weather.com\n', {errCaught, forecastURL, err, resp, data}
 
@@ -200,6 +199,14 @@ http.createServer (req, res) ->
       daypName  = daypart.daypartName[daypIdx]
 
       logd {dayIdx,daypIdx,daypName}
+
+      try
+        # logd "writing #{daypart.temperature[daypIdx]} to high.txt"
+        fs.writeFileSync "high.txt", daypart.temperature[daypIdx].toString()
+      catch e
+        logd "error writing high.txt, daypIdx: #{daypIdx}, err: #{e}"
+        for val, idx in daypart.temperature
+          logd "daypart.temperature, idx: #{idx}, val: #{val}"
 
       # phrase = daypart[0].daypartName
       # wxPhraseLong[dayIdx]

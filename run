@@ -1,8 +1,10 @@
 kill $(pgrep -f /root/dev/apps/bath/lib/server)
 set -e
 cd /root/dev/apps/bath
+# rm nohup.out
+# echo "0" > high.txt
 coffee -co lib src/*.coffee
 nohup node /root/dev/apps/bath/lib/server &
 sleep 1
-tail -n 100 nohup.out
+tail -fn 100 nohup.out
 echo
