@@ -43,7 +43,7 @@ sendWarningEmail = ->
 
 logd = (args...) -> 
   # console.log((new Date()).toLocaleString()
-  console.log('srvr:', (new Date()).toLocaleString(), args...)
+  # console.log('srvr:', (new Date()).toLocaleString(), args...)
 
 getWxData = (cb) ->
   db = new sqlite3.Database '/var/lib/weewx/weewx.sdb', sqlite3.OPEN_READONLY, (err) ->
@@ -63,15 +63,23 @@ getWxData = (cb) ->
 fs.writeFileSync 'flash', 'no'
 
 setInterval ->
-  if new Date().getHours() is 5
-    fs.writeFileSync 'flash', 'yes'
+  hrsNow = new Date().getHours()
+  
+  if hrsNow is 5
+    fs.writeFileSync 'flash', 'morning'
+
+  if hrsNow is 20
+    fs.writeFileSync 'flash', 'night'
+
   try
     flash = fs.readFileSync 'flash', 'utf8'
   catch e
     flash = 'no'
-  if flash is 'yes' and new Date().getHours() > 10 and
+
+  if flash is 'morning' and hrsNow > 10 and
       (Date.now() - lastEmail) > 60*60*1000
     sendWarningEmail()
+
 , 10*60*1000
 
 ###

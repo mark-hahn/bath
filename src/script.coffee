@@ -115,7 +115,7 @@ $('#dow').css color: dowColor
 
 setInterval ->
 	$('#dow').css color: dowColor
-	if flash is 'yes'
+	if flash isnt 'no'
 		if dowColor is 'white' then dowColor = 'blue' else dowColor = 'white'
 	else
 		dowColor = 'white'
@@ -123,7 +123,6 @@ setInterval ->
 
 $ ->
 	$('body').on 'click', '#dow', ->
-		flash = 'yes'
 		dowColor = 'red'
 		$('#dow').css color: dowColor
 		setTimeout ->
