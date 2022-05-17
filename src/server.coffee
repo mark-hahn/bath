@@ -32,18 +32,17 @@ mailOptions =
   text: "Pill warning"
   html: "Pill warning"
 
+logd = (args...) -> 
+  console.log('srvr:', (new Date()).toLocaleString(), args...)
+
 lastEmail = 0 #Date.now()
 sendWarningEmail = ->
   lastEmail = Date.now()
   transporter.sendMail mailOptions, (error, info) ->
     if error
       logd error
-    else
-      logd "Message sent: " + info.response
-
-logd = (args...) -> 
-  # console.log((new Date()).toLocaleString()
-  # console.log('srvr:', (new Date()).toLocaleString(), args...)
+    # else
+    #   logd "Message sent: " + info.response
 
 getWxData = (cb) ->
   db = new sqlite3.Database '/var/lib/weewx/weewx.sdb', sqlite3.OPEN_READONLY, (err) ->
@@ -82,62 +81,6 @@ setInterval ->
 
 , 10*60*1000
 
-###
-{ dayOfWeek:
-   [ 'Friday', 'Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday' ],
-  expirationTimeUtc:
-   [ 1567217117,
-     1567217117,
-     1567217117,
-     1567217117,
-     1567217117,
-     1567217117 ],
-  narrative:
-   [ 'Clear. Lows overnight in the upper 60s.',
-     'Sunny. Highs in the upper 80s and lows in the upper 60s.',
-     'Abundant sunshine. Highs in the low 90s and lows in the low 70s.',
-     'Sunshine. Highs in the upper 80s and lows in the low 70s.',
-     'Abundant sunshine. Highs in the upper 80s and lows in the low 70s.',
-     'Abundant sunshine. Highs in the low 90s and lows in the low 70s.' ],
-  temperatureMax: [ null, 89, 92, 89, 89, 90 ],
-  temperatureMin: [ 69, 69, 70, 71, 71, 71 ],
-  validTimeUtc:
-   [ 1567173600,
-     1567260000,
-     1567346400,
-     1567432800,
-     1567519200,
-     1567605600 ],
-  daypart:
-   [ { cloudCover: [Array],
-       dayOrNight: [Array],
-       daypartName: [Array],
-       iconCode: [Array],
-       iconCodeExtend: [Array],
-       narrative: [Array],
-       precipChance: [Array],
-       precipType: [Array],
-       qpf: [Array],
-       qpfSnow: [Array],
-       qualifierCode: [Array],
-       qualifierPhrase: [Array],
-       relativeHumidity: [Array],
-       snowRange: [Array],
-       temperature: [Array],
-       temperatureHeatIndex: [Array],
-       temperatureWindChill: [Array],
-       thunderCategory: [Array],
-       thunderIndex: [Array],
-       uvDescription: [Array],
-       uvIndex: [Array],
-       windDirection: [Array],
-       windDirectionCardinal: [Array],
-       windPhrase: [Array],
-       windSpeed: [Array],
-       wxPhraseLong: [Array],
-       wxPhraseShort: [Array] 
-
-###
 cacheTime = 0
 days = null
 daypart = null
@@ -151,15 +94,15 @@ do getForecast = ->
       try
         data = JSON.parse datain  
         days = data.dayOfWeek
-        logd 'Accessed api.weather.com and got ' + days.length + ' days.'
+        # logd 'Accessed api.weather.com and got ' + days.length + ' days.'
         cacheTime = Date.now()
         daypart = data.daypart[0]
       catch errCaught 
         logd 'error accessing api.weather.com\n', {errCaught, forecastURL, err, resp, data}
 
 http.createServer (req, res) ->
-  if not req.url.startsWith '/weewx'
-    logd 'req:', req.url
+  # if not req.url.startsWith '/weewx'
+  #   logd 'req:', req.url
   if req.url is '/'
     res.writeHead 200, "Content-Type": "text/html"
     res.end render ->
@@ -206,15 +149,15 @@ http.createServer (req, res) ->
         daypIdx   = dayIdx * 2
       daypName  = daypart.daypartName[daypIdx]
 
-      logd {dayIdx,daypIdx,daypName}
+      # logd {dayIdx,daypIdx,daypName}
 
       try
         # logd "writing #{daypart.temperature[daypIdx]} to high.txt"
         fs.writeFileSync "high.txt", daypart.temperature[daypIdx].toString()
       catch e
         logd "error writing high.txt, daypIdx: #{daypIdx}, err: #{e}"
-        for val, idx in daypart.temperature
-          logd "daypart.temperature, idx: #{idx}, val: #{val}"
+        # for val, idx in daypart.temperature
+        #   logd "daypart.temperature, idx: #{idx}, val: #{val}"
 
       # phrase = daypart[0].daypartName
       # wxPhraseLong[dayIdx]
@@ -287,3 +230,61 @@ http.createServer (req, res) ->
 
 
 logd 'listening on port 1337'
+
+
+###
+{ dayOfWeek:
+   [ 'Friday', 'Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday' ],
+  expirationTimeUtc:
+   [ 1567217117,
+     1567217117,
+     1567217117,
+     1567217117,
+     1567217117,
+     1567217117 ],
+  narrative:
+   [ 'Clear. Lows overnight in the upper 60s.',
+     'Sunny. Highs in the upper 80s and lows in the upper 60s.',
+     'Abundant sunshine. Highs in the low 90s and lows in the low 70s.',
+     'Sunshine. Highs in the upper 80s and lows in the low 70s.',
+     'Abundant sunshine. Highs in the upper 80s and lows in the low 70s.',
+     'Abundant sunshine. Highs in the low 90s and lows in the low 70s.' ],
+  temperatureMax: [ null, 89, 92, 89, 89, 90 ],
+  temperatureMin: [ 69, 69, 70, 71, 71, 71 ],
+  validTimeUtc:
+   [ 1567173600,
+     1567260000,
+     1567346400,
+     1567432800,
+     1567519200,
+     1567605600 ],
+  daypart:
+   [ { cloudCover: [Array],
+       dayOrNight: [Array],
+       daypartName: [Array],
+       iconCode: [Array],
+       iconCodeExtend: [Array],
+       narrative: [Array],
+       precipChance: [Array],
+       precipType: [Array],
+       qpf: [Array],
+       qpfSnow: [Array],
+       qualifierCode: [Array],
+       qualifierPhrase: [Array],
+       relativeHumidity: [Array],
+       snowRange: [Array],
+       temperature: [Array],
+       temperatureHeatIndex: [Array],
+       temperatureWindChill: [Array],
+       thunderCategory: [Array],
+       thunderIndex: [Array],
+       uvDescription: [Array],
+       uvIndex: [Array],
+       windDirection: [Array],
+       windDirectionCardinal: [Array],
+       windPhrase: [Array],
+       windSpeed: [Array],
+       wxPhraseLong: [Array],
+       wxPhraseShort: [Array] 
+
+###

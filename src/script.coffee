@@ -114,11 +114,11 @@ dowColor = 'white'
 $('#dow').css color: dowColor
 
 setInterval ->
-	$('#dow').css color: dowColor
 	if flash isnt 'no'
 		if dowColor is 'white' then dowColor = 'blue' else dowColor = 'white'
 	else
 		dowColor = 'white'
+	$('#dow').css color: dowColor
 , 1000
 
 $ ->
