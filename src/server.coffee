@@ -23,7 +23,7 @@ transporter = nodemailer.createTransport
   service: "Gmail"
   auth:
     user: "mark@hahnca.com"
-    pass: "90GHJlkjert"
+    pass: "90-GHJlkjert"
 
 mailOptions =
   from: "mark@hahnca.com"
