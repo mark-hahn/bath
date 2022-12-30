@@ -9,11 +9,11 @@ api doc ...
     
 ###
 
-fs		   	= require 'fs'
-url 		  = require 'url'
-http    	= require 'http'
-request 	= require 'request'
-cheerio 	= require 'cheerio'
+fs		    	= require 'fs'
+url 		    = require 'url'
+http      	= require 'http'
+request   	= require 'request'
+cheerio   	= require 'cheerio'
 nodeStatic  = require 'node-static'
 fileServer	= new nodeStatic.Server null #, cache: 0
 sqlite3     = require("sqlite3").verbose()
@@ -23,7 +23,7 @@ transporter = nodemailer.createTransport
   service: "Gmail"
   auth:
     user: "mark@hahnca.com"
-    pass: "90-GHJlkjert"
+    pass: "9GHJlkjert"
 
 mailOptions =
   from: "mark@hahnca.com"
