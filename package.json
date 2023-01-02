@@ -3,6 +3,7 @@
     "cheerio": "*",
     "forever": "^4.0.1",
     "forever-monitor": "^3.0.3",
+    "mailgun-js": "^0.22.0",
     "node-static": "^0.7.11",
     "nodemailer": "^6.6.5",
     "request": "^2.88.2",

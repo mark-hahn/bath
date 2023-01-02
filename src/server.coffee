@@ -10,6 +10,7 @@ api doc ...
 ###
 
 fs		    	= require 'fs'
+util        = require 'util'
 url 		    = require 'url'
 http      	= require 'http'
 request   	= require 'request'
@@ -18,31 +19,48 @@ nodeStatic  = require 'node-static'
 fileServer	= new nodeStatic.Server null #, cache: 0
 sqlite3     = require("sqlite3").verbose()
 
-nodemailer = require "nodemailer"
-transporter = nodemailer.createTransport
-  service: "Gmail"
-  auth:
-    user: "mark@hahnca.com"
-    pass: "9GHJlkjert"
-
+mailgun = require "mailgun-js"
+mg = mailgun
+  apiKey: 'key-6633172a94cfe5201a13b79a2d904270'
+  domain: 'eridien.com'
 mailOptions =
-  from: "mark@hahnca.com"
-  to: "mark@hahnca.com"
-  subject: "Pill warning"
-  text: "Pill warning"
-  html: "Pill warning"
+  from: 'bath <mark@eridien.mailgun.org>',
+  to: 'mark@hahnca.com',
+  subject: 'Pill Warning',
+  text: 'Check pillpack pills.'
+
+# nodemailer = require "nodemailer"
+# transporter = nodemailer.createTransport
+#   service: "Gmail"
+#   auth:
+#     user: "mark@hahnca.com"
+#     pass: "9GHJlkjert"
+
+# mailOptions =
+#   from: "mark@hahnca.com"
+#   to: "mark@hahnca.com"
+#   subject: "Pill warning"
+#   text: "Pill warning"
+#   html: "Pill warning"
 
 logd = (args...) -> 
-  console.log('srvr:', (new Date()).toLocaleString(), args...)
+  console.log('srvr:', (new Date()).toLocaleString()+':', args...)
 
 lastEmail = 0 #Date.now()
 sendWarningEmail = ->
   lastEmail = Date.now()
-  transporter.sendMail mailOptions, (error, info) ->
+
+  # transporter.sendMail mailOptions, (error, info) ->
+  #   if error
+  #     logd error
+  #   else
+  #     logd "Message sent: " + info.response
+
+  mg.messages().send mailOptions, (error, info) ->
     if error
       logd error
-    # else
-    #   logd "Message sent: " + info.response
+    else
+      logd "Message sent: " + util.inspect info
 
 getWxData = (cb) ->
   db = new sqlite3.Database '/var/lib/weewx/weewx.sdb', sqlite3.OPEN_READONLY, (err) ->
@@ -199,7 +217,6 @@ http.createServer (req, res) ->
     catch e
     dateMS = Date.now()
     res.end JSON.stringify {flash, dateMS}
-    # sendWarningEmail()  # test email on day click
     return
 
   if req.url[0...9] is '/weewx'
@@ -231,6 +248,7 @@ http.createServer (req, res) ->
 
 logd 'listening on port 1337'
 
+# sendWarningEmail()  # test email
 
 ###
 { dayOfWeek:

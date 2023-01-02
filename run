@@ -4,7 +4,11 @@ cd /root/dev/apps/bath
 # rm nohup.out
 # echo "0" > high.txt
 coffee -co lib src/*.coffee
+
 nohup node /root/dev/apps/bath/lib/server.js 2>&1 &
+
+# node /root/dev/apps/bath/lib/server.js 2>&1
+
 sleep 1
 #tail -fn 100 nohup.out
 echo
