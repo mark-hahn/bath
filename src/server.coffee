@@ -19,48 +19,30 @@ nodeStatic  = require 'node-static'
 fileServer	= new nodeStatic.Server null #, cache: 0
 sqlite3     = require("sqlite3").verbose()
 
-mailgun = require "mailgun-js"
-mg = mailgun
-  apiKey: 'key-6633172a94cfe5201a13b79a2d904270'
-  domain: 'eridien.com'
-mailOptions =
-  from: 'bath <mark@eridien.mailgun.org>',
-  to: 'mark@hahnca.com',
-  subject: 'Pill Warning',
-  text: 'Check pillpack pills.'
-
-# nodemailer = require "nodemailer"
-# transporter = nodemailer.createTransport
-#   service: "Gmail"
-#   auth:
-#     user: "mark@hahnca.com"
-#     pass: "9GHJlkjert"
-
-# mailOptions =
-#   from: "mark@hahnca.com"
-#   to: "mark@hahnca.com"
-#   subject: "Pill warning"
-#   text: "Pill warning"
-#   html: "Pill warning"
-
+mailTrap = require("mailtrap").MailtrapClient
+TOKEN = "f296937f00db860da74d480cd66821dd"
+ENDPOINT = "https://send.api.mailtrap.io/"
+mailClient = new mailTrap { endpoint: ENDPOINT, token: TOKEN }
+sender =
+  email: "mark@hahnca.com",
+  name:  "Mark Hahn",
+recipients = [
+  email: "mark@hahnca.com",
+]
 logd = (args...) -> 
   console.log('srvr:', (new Date()).toLocaleString()+':', args...)
 
 lastEmail = 0 #Date.now()
 sendWarningEmail = ->
   lastEmail = Date.now()
-
-  # transporter.sendMail mailOptions, (error, info) ->
-  #   if error
-  #     logd error
-  #   else
-  #     logd "Message sent: " + info.response
-
-  mg.messages().send mailOptions, (error, info) ->
-    if error
-      logd error
-    else
-      logd "Message sent: " + util.inspect info
+  mailClient
+    .send
+      from: sender
+      to: recipients
+      subject:  "Pill Warning"
+      text:     "Pill Warning"
+      category: "Pill Warning"
+    .then(console.log, console.error);
 
 getWxData = (cb) ->
   db = new sqlite3.Database '/var/lib/weewx/weewx.sdb', sqlite3.OPEN_READONLY, (err) ->
@@ -248,7 +230,7 @@ http.createServer (req, res) ->
 
 logd 'listening on port 1337'
 
-# sendWarningEmail()  # test email
+sendWarningEmail()  # test email
 
 ###
 { dayOfWeek:
