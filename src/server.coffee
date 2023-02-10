@@ -19,8 +19,8 @@ nodeStatic  = require 'node-static'
 fileServer	= new nodeStatic.Server null #, cache: 0
 sqlite3     = require("sqlite3").verbose()
 
-mailTrap = require("mailtrap").MailtrapClient
-TOKEN = "f296937f00db860da74d480cd66821dd"
+mailTrap =  require("mailtrap").MailtrapClient
+TOKEN    =  fs.readFileSync 'mailtrap-token.txt', 'utf8'
 ENDPOINT = "https://send.api.mailtrap.io/"
 mailClient = new mailTrap { endpoint: ENDPOINT, token: TOKEN }
 sender =
@@ -38,7 +38,7 @@ sendWarningEmail = ->
   mailClient
     .send
       from: sender
-      to: recipients
+      to:   recipients
       subject:  "Pill Warning"
       text:     "Pill Warning"
       category: "Pill Warning"
