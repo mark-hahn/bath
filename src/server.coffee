@@ -29,6 +29,7 @@ sender =
 recipients = [
   email: "mark@hahnca.com",
 ]
+
 logd = (args...) -> 
   console.log('srvr:', (new Date()).toLocaleString()+':', args...)
 
@@ -42,7 +43,7 @@ sendWarningEmail = ->
       subject:  "Pill Warning"
       text:     "Pill Warning"
       category: "Pill Warning"
-    .then(console.log, console.error);
+    .then console.log, console.error
 
 getWxData = (cb) ->
   db = new sqlite3.Database '/var/lib/weewx/weewx.sdb', sqlite3.OPEN_READONLY, (err) ->
