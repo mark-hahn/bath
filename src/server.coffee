@@ -46,7 +46,7 @@ sendWarningEmail = ->
     .then console.log, console.error
 
 getWxData = (cb) ->
-  db = new sqlite3.Database '/var/lib/weewx/weewx.sdb', sqlite3.OPEN_READONLY, (err) ->
+  db = new sqlite3.Database '/root/weewx-data/archive/weewx.sdb', sqlite3.OPEN_READONLY, (err) ->
     if err then logd 'Error opening weewx db', err; cb? err; return
     db.get 'SELECT outTemp, outHumidity FROM archive ORDER BY  dateTime DESC LIMIT 1', (err, res) ->
       if err
