@@ -12,9 +12,6 @@ do refreshSize = ->
 	medium = (bodyWid/ 6) + 'px'
 	small = (bodyWid/12) + 'px'
 
-	for hdrId in ['high']
-		$('#' + hdrId).css fontSize: large
-
 	for hdrId in ['rain', 'humidity', 'dayOfWeek', 'phrase']
 		$('#' + hdrId).css fontSize: small
 
@@ -40,8 +37,8 @@ refreshFore = ->
 								width:35%; height:100%', ->
 						img style:'width:100%; height:100%', src: iconURL
 					div style:'float:right; text-align:right; color:black;
-								position:relative; top:1%;
-								width:40%; margin-right:10%;', ->
+								position:relative; top:-30px;
+								width:40%; margin-right:10%; font-size:300px;', ->
 						div '#high', -> raw Math.ceil high
 
 				div '#row2', style:'clear:both; float:left; margin-top:3%;
@@ -79,13 +76,12 @@ refreshCurAndTime = ->
 		console.log data.data, outTemp + '&deg; &nbsp; ' + outHumidity+'%'
 		$('#current').replaceWith render ->
 			div '#current', style:'clear:both; float:left; position:relative; top:8%;
-				width:100%; height:36%', ->
+				width:100%; height:36%; font-size:175px', ->
 				div style:'clear:both; float:left; margin:10% 0 2% 10%;
-						color:black; font-size:' + medium, ->
+						color:black; font-size:175px;', ->
 					raw outTemp + '&deg;'
-
 				div style:'float:right; margin:10% 7% 2% 10%;
-						color:black; font-size:' + medium, ->
+						color:black; font-size:175px;', ->
 					raw outHumidity+'%'
 
 	$.getJSON '/flash', (data) -> {flash, dateMS} = data
@@ -96,13 +92,17 @@ refreshCurAndTime = ->
 
 	dow  = date.getDay()
 	dowStr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dow]
-	$('#dow').css(fontSize: medium).text dowStr
+	$('#dow').css(fontSize: '175px').text dowStr
 
 	hour = ['12', ' 1', ' 2', ' 3', ' 4', ' 5',
 			' 6', ' 7', ' 8', ' 9', '10', '11'][date.getHours() % 12]
 	mins = '' + date.getMinutes()
 	if mins.length < 2 then mins = '0' + mins
-	$('#time').css(fontSize: medium).html hour + ':' + mins + '<br>&nbsp;<br>&nbsp;'
+	$('#time').html hour + ':' + mins
+
+	month = date.getMonth() + 1
+	day = date.getDate()  
+	$('#date').text month + '/' + day
 
 lastHour = null
 setInterval ->
