@@ -76,11 +76,11 @@ refreshCurAndTime = ->
 		console.log data.data, outTemp + '&deg; &nbsp; ' + outHumidity+'%'
 		$('#current').replaceWith render ->
 			div '#current', style:'clear:both; float:left; position:relative; top:5%;
-				width:100%; height:24%; font-size:150px', ->
-				div style:'clear:both; float:left; margin:2% 0 2% 10%;
+				width:100%; height:24%; font-size:120px', ->
+				div style:'clear:both; float:left; margin:2% 0 2% 12%;
 						color:black;', ->
 					raw outTemp + '&deg;'
-				div style:'float:right; margin:2% 7% 2% 10%;
+				div style:'float:right; margin:2% 7% 2% 0%;
 						color:black;', ->
 					raw outHumidity+'%'
 
