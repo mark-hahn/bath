@@ -76,12 +76,12 @@ refreshCurAndTime = ->
 		console.log data.data, outTemp + '&deg; &nbsp; ' + outHumidity+'%'
 		$('#current').replaceWith render ->
 			div '#current', style:'clear:both; float:left; position:relative; top:5%;
-				width:100%; height:27%; font-size:175px', ->
+				width:100%; height:24%; font-size:150px', ->
 				div style:'clear:both; float:left; margin:2% 0 2% 10%;
-						color:black; font-size:175px;', ->
+						color:black; font-size:150px;', ->
 					raw outTemp + '&deg;'
 				div style:'float:right; margin:2% 7% 2% 10%;
-						color:black; font-size:175px;', ->
+						color:black; font-size:150px;', ->
 					raw outHumidity+'%'
 
 	$.getJSON '/flash', (data) -> {flash, dateMS} = data
@@ -92,7 +92,7 @@ refreshCurAndTime = ->
 
 	dow  = date.getDay()
 	dowStr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dow]
-	$('#dow').css(fontSize: '175px').text dowStr
+	$('#dow').css(fontSize: '150px').text dowStr
 
 	hour = ['12', ' 1', ' 2', ' 3', ' 4', ' 5',
 			' 6', ' 7', ' 8', ' 9', '10', '11'][date.getHours() % 12]
