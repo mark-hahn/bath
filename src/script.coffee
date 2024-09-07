@@ -138,6 +138,7 @@ $ ->
 			dowColor = 'black'
 			$('#dow').css color: dowColor
 			blockFlash = no
+			flash = 'no'
 		, 1000
 		$.get '/flash', clear: 1
 
