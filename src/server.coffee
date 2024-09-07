@@ -118,19 +118,19 @@ http.createServer (req, res) ->
             div style:'clear:both; float:left; width:100%; height:3px;
                   position: relative; top: 0%;
                   background-color:black; margin-top:-2%;'
-            div '#forecast', style:'width:100%; height:45%'
-            div style:'clear:both; float:left; width:100%; height:3px;
-                  position: relative; top: 9%;
-                  background-color:black; margin-top:-2%;'
-            div '#current'
-            div style:'clear:both; float:left; width:100%; height:3px;
-                  position: relative; top: 0%;
-                  background-color:black; margin-top:-2%;'
             div ->
               div '#dow', style:'clear:both; float:left; margin:5% 0 0% 12%;
                         color:black;font-size:175px;'
               div '#date', style:'float:right; margin:5% 9% 0% 0;
                         color:black;font-size:175px;'
+            div style:'clear:both; float:left; width:100%; height:3px;
+                  position: relative; top: 9%;
+                  background-color:black; margin-top:-10%;'
+            div '#current'
+            div style:'clear:both; float:left; width:100%; height:3px;
+                  position: relative; top: 0%;
+                  background-color:black; margin-top:-2%;'
+            div '#forecast', style:'width:100%; height:45%'
 
           script src: 'http://code.jquery.com/jquery-1.11.0.min.js'
           script src: 'lib/teacup.js'
