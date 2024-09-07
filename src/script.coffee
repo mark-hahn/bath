@@ -120,17 +120,18 @@ $('#dow').css color: dowColor
 blockFlash = no
 
 setInterval ->
-  if blockFlash then return
-	if flash isnt 'no'
-		if dowColor is 'black' then dowColor = 'blue' else dowColor = 'black'
-	else
-		dowColor = 'black'
-	$('#dow').css color: dowColor
+  # console.log {blockFlash, flash}
+  if not blockFlash
+    if flash isnt 'no'
+      if dowColor is 'black' then dowColor = 'blue' else dowColor = 'black'
+    else
+      dowColor = 'black'
+    $('#dow').css color: dowColor
 , 1000
 
 $ ->
 	$('body').on 'click', '#dow', ->
-    blockFlash = yes
+		blockFlash = yes
 		dowColor = 'red'
 		$('#dow').css color: dowColor
 		setTimeout ->
