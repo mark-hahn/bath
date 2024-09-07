@@ -113,7 +113,9 @@ http.createServer (req, res) ->
           title 'forecast - bath'
         body style:'background-color:white; color:black;', ->
           div style:'width:100%; height:1375px', ->
-            div style:'display: flex; align-items: center; justify-content: center; margin-bottom:30px;', ->
+            div '#forecast', style:'width:100%; height:45%'
+            div style:'clear:both; float:left; width:100%; height:3px; position: relative; top: 5%; background-color:black; margin-top:-2%;'
+            div style:'clear:both; display: flex; align-items: center; justify-content: center; margin-bottom:30px;position:relative;top:25px;', ->
               div '#time', style:'font-size:300px; color:black;'
             div style:'clear:both; float:left; width:100%; height:3px;
                   position: relative; top: 0%;
@@ -130,7 +132,6 @@ http.createServer (req, res) ->
             div style:'clear:both; float:left; width:100%; height:3px;
                   position: relative; top: 0%;
                   background-color:black; margin-top:-2%;'
-            div '#forecast', style:'width:100%; height:45%'
 
           script src: 'http://code.jquery.com/jquery-1.11.0.min.js'
           script src: 'lib/teacup.js'
