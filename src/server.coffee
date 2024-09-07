@@ -119,9 +119,9 @@ http.createServer (req, res) ->
                   position: relative; top: 0%;
                   background-color:black; margin-top:-2%;'
             div ->
-              div '#dow', style:'clear:both; float:left; margin:5% 0 0% 12%;
+              div '#dow', style:'clear:both; float:left; margin:2% 0 0% 12%;
                         color:black;font-size:175px;'
-              div '#date', style:'float:right; margin:5% 9% 0% 0;
+              div '#date', style:'float:right; margin:2% 9% 0% 0;
                         color:black;font-size:175px;'
             div style:'clear:both; float:left; width:100%; height:3px;
                   position: relative; top: 9%;
