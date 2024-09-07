@@ -82,7 +82,11 @@ refreshCurAndTime = ->
 				width:100%; height:36%', ->
 				div style:'clear:both; float:left; margin:10% 0 2% 10%;
 						color:black; font-size:' + medium, ->
-					raw outTemp + '&deg; &nbsp; ' + outHumidity+'%'
+					raw outTemp + '&deg;'
+
+				div style:'float:right; margin:10% 7% 2% 10%;
+						color:black; font-size:' + medium, ->
+					raw outHumidity+'%'
 
 	$.getJSON '/flash', (data) -> {flash, dateMS} = data
 
