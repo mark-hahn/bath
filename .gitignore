@@ -6,5 +6,6 @@ lib/**
 nohup.out
 flash
 high.txt
+high-day.txt
 package-lock.json
 mailtrap-token.txt

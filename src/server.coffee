@@ -43,7 +43,7 @@ sendWarningEmail = ->
       subject:  "Pill Warning"
       text:     "Pill Warning"
       category: "Pill Warning"
-    .then console.log, console.error
+    # .then console.log, console.error
 
 getWxData = (cb) ->
   db = new sqlite3.Database '/root/weewx-data/archive/weewx.sdb', sqlite3.OPEN_READONLY, (err) ->
@@ -160,6 +160,7 @@ http.createServer (req, res) ->
       try
         # logd "writing #{daypart.temperature[daypIdx]} to high.txt"
         fs.writeFileSync "high.txt", daypart.temperature[daypIdx].toString()
+        fs.writeFileSync "high-day.txt", daypName
       catch e
         logd "error writing high.txt, daypIdx: #{daypIdx}, err: #{e}"
         # for val, idx in daypart.temperature
