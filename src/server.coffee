@@ -111,7 +111,7 @@ http.createServer (req, res) ->
       html ->
         head ->
           title 'forecast - bath'
-        body style:'background-color:white; color:black;', ->
+        body style:'background-color:white; color:black; font-family: sans-serif', ->
           div style:'width:100%; height:1375px', ->
             div style:'display: flex; align-items: center; justify-content: center; margin-bottom:30px;', ->
               div '#time', style:'font-size:300px; color:black;'
