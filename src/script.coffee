@@ -39,13 +39,13 @@ refreshFore = ->
 								position: relative; left: 5%;
 								width:35%; height:100%', ->
 						img style:'width:100%; height:100%', src: iconURL
-					div style:'float:right; text-align:right; color:white;
+					div style:'float:right; text-align:right; color:black;
 								position:relative; top:1%;
 								width:40%; margin-right:10%;', ->
 						div '#high', -> raw Math.ceil high
 
 				div '#row2', style:'clear:both; float:left; margin-top:3%;
-									color:white; width:100%; height:20%', ->
+									color:black; width:100%; height:20%', ->
 					div style:'clear:both; float:left; margin-left:10%;
 							   width:45%', ->
 						div '#dayOfWeek', (if dayOfWeek then dayOfWeek else '')
@@ -55,7 +55,7 @@ refreshFore = ->
 							(if humidity then humidity + '%' else '')
 
 				div '#row3', style:'clear:both; float:left;  margin-top:3%; margin-bottom:3%;
-									color:white; width:100%; height:20%', ->
+									color:black; width:100%; height:20%', ->
 					div style:'clear:both; float:left; margin-left:10%;
 							width:48%', ->
 						div '#phrase', ->
@@ -64,7 +64,7 @@ refreshFore = ->
 							width:32%; text-align:right', ->
 						div '#rain', (if rain? then rain + '%' else '')
 					div style:'clear:both'
-				div style:'height:3%', '&nbsp;'
+				div style:'height:3%'
 
 flash   = 'no'
 dateMS  = ''
@@ -81,7 +81,7 @@ refreshCurAndTime = ->
 			div '#current', style:'clear:both; float:left; position:relative; top:8%;
 				width:100%; height:36%', ->
 				div style:'clear:both; float:left; margin:10% 0 2% 10%;
-						color:white; font-size:' + medium, ->
+						color:black; font-size:' + medium, ->
 					raw outTemp + '&deg; &nbsp; ' + outHumidity+'%'
 
 	$.getJSON '/flash', (data) -> {flash, dateMS} = data
@@ -110,14 +110,14 @@ setInterval ->
 	refreshCurAndTime()
 , 5000
 
-dowColor = 'white'
+dowColor = 'black'
 $('#dow').css color: dowColor
 
 setInterval ->
 	if flash isnt 'no'
-		if dowColor is 'white' then dowColor = 'blue' else dowColor = 'white'
+		if dowColor is 'black' then dowColor = 'blue' else dowColor = 'black'
 	else
-		dowColor = 'white'
+		dowColor = 'black'
 	$('#dow').css color: dowColor
 , 1000
 
@@ -126,7 +126,7 @@ $ ->
 		dowColor = 'red'
 		$('#dow').css color: dowColor
 		setTimeout ->
-			dowColor = 'white'
+			dowColor = 'black'
 			$('#dow').css color: dowColor
 		, 1000
 		$.get '/flash', clear: 1
