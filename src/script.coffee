@@ -37,8 +37,8 @@ refreshFore = ->
 								width:35%; height:100%', ->
 						img style:'width:100%; height:100%', src: iconURL
 					div style:'float:right; text-align:right; color:black;
-								position:relative; top:-30px;
-								width:40%; margin-right:10%; font-size:300px;', ->
+								position:relative; top:40px;
+								width:40%; margin-right:10%; font-size:175px;', ->
 						div '#high', -> raw Math.ceil high
 
 				div '#row2', style:'clear:both; float:left; margin-top:3%;
@@ -71,12 +71,13 @@ dateMS  = ''
 refreshCurAndTime = ->
 	$.get 'weewx', (data) ->
 		data = JSON.parse data
-		outTemp = data.data.outTemp
+		outTemp = Math.round data.data.outTemp
 		outHumidity = data.data.outHumidity
-		console.log data.data, outTemp + '&deg; &nbsp; ' + outHumidity+'%'
+		# console.log data.data, outTemp + '&deg; &nbsp; ' + outHumidity+'%'
+		console.log outTemp, outHumidity
 		$('#current').replaceWith render ->
 			div '#current', style:'clear:both; float:left; position:relative; top:5%;
-				width:100%; height:24%; font-size:120px', ->
+				width:100%; height:24%; font-size:175px', ->
 				div style:'clear:both; float:left; margin:2% 0 2% 12%;
 						color:black;', ->
 					raw outTemp + '&deg;'
