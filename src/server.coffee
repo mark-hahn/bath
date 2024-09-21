@@ -111,25 +111,25 @@ http.createServer (req, res) ->
       html ->
         head ->
           title 'forecast - bath'
-        body style:'background-color:white; color:black; font-family: sans-serif', ->
+        body style:'background-color:black; color:white; font-family: sans-serif', ->
           div style:'width:100%; height:1375px', ->
             div style:'display: flex; align-items: center; justify-content: center; margin-bottom:30px;', ->
-              div '#time', style:'font-size:300px; color:black;'
+              div '#time', style:'font-size:300px; color:white;'
             div style:'clear:both; float:left; width:100%; height:3px;
                   position: relative; top: 0%;
-                  background-color:black; margin-top:-2%;'
+                  background-color:white; margin-top:-2%;'
             div ->
               div '#dow', style:'clear:both; float:left; margin:2% 0 0% 12%;
-                        color:black;font-size:175px;'
+                        color:white;font-size:175px;'
               div '#date', style:'float:right; margin:2% 9% 0% 0;
-                        color:black;font-size:175px;'
+                        color:white;font-size:175px;'
             div style:'clear:both; float:left; width:100%; height:3px;
                   position: relative; top: 9%;
-                  background-color:black; margin-top:-10%;'
+                  background-color:white; margin-top:-10%;'
             div '#current'
             div style:'clear:both; float:left; width:100%; height:3px;
                   position: relative; top: 0%;
-                  background-color:black; margin-top:-2%;'
+                  background-color:white; margin-top:-2%;'
             div '#forecast', style:'width:100%; height:45%'
 
           script src: 'http://code.jquery.com/jquery-1.11.0.min.js'
