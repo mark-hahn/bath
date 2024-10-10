@@ -119,10 +119,10 @@ http.createServer (req, res) ->
                   position: relative; top: 0%;
                   background-color:white; margin-top:-2%;'
             div ->
-              div '#dow', style:'clear:both; float:left; margin:2% 0 0% 12%;
-                        color:white;font-size:175px;'
-              div '#date', style:'float:right; margin:2% 9% 0% 0;
-                        color:white;font-size:175px;'
+              div '#dow', style:'clear:both; float:left; margin:3% 0 0% 12%;
+                        color:white;font-size:140px;'
+              div '#date', style:'float:right; margin:3% 15% 0% 0;
+                        color:white;font-size:140px;'
             div style:'clear:both; float:left; width:100%; height:3px;
                   position: relative; top: 9%;
                   background-color:white; margin-top:-10%;'

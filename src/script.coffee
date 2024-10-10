@@ -93,7 +93,7 @@ refreshCurAndTime = ->
 
 	dow  = date.getDay()
 	dowStr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dow]
-	$('#dow').css(fontSize: '175px').text dowStr
+	$('#dow').css(fontSize: '140px').text dowStr
 
 	hour = ['12', ' 1', ' 2', ' 3', ' 4', ' 5',
 			' 6', ' 7', ' 8', ' 9', '10', '11'][date.getHours() % 12]
